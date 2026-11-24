@@ -1,0 +1,1 @@
+ALTER TABLE "FeedItemRecord" ADD COLUMN "replies" JSONB NOT NULL DEFAULT '[]';

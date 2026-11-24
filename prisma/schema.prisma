@@ -1,0 +1,105 @@
+// The contract: every change here ships as a migration in a PR.
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Source {
+  slack
+  gmail
+  calendar
+  github
+}
+
+enum FeedItemKind {
+  message
+  email
+  event
+  review_request
+  issue
+}
+
+enum Priority {
+  high
+  normal
+  low
+}
+
+enum ItemStatus {
+  unread
+  read
+  archived
+  snoozed
+}
+
+model User {
+  id                String             @id @default(cuid())
+  email             String             @unique
+  name              String?
+  createdAt         DateTime           @default(now())
+  connectedAccounts ConnectedAccount[]
+  feedItems         FeedItemRecord[]
+  briefs            DailyBrief[]
+}
+
+model ConnectedAccount {
+  id                    String    @id @default(cuid())
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source                Source
+  externalAccountId     String
+  // AES-GCM ciphertext; the key lives in env (see lib/crypto).
+  encryptedAccessToken  String
+  encryptedRefreshToken String?
+  expiresAt             DateTime?
+  scopes                String[]
+  lastSyncedAt          DateTime?
+
+  @@unique([userId, source, externalAccountId])
+}
+
+model FeedItemRecord {
+  id              String       @id @default(cuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source          Source
+  externalId      String
+  kind            FeedItemKind
+  title           String
+  preview         String
+  body            String
+  senderName      String
+  senderAvatarUrl String?
+  senderHandle    String?
+  url             String
+  receivedAt      DateTime
+  dueAt           DateTime?
+  priority        Priority     @default(normal)
+  status          ItemStatus   @default(unread)
+  replies         Json         @default("[]")
+  snooze          Snooze?
+
+  @@unique([userId, source, externalId])
+  @@index([userId, status, receivedAt])
+}
+
+model Snooze {
+  itemId String         @id
+  item   FeedItemRecord @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  until  DateTime
+}
+
+model DailyBrief {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime @db.Date
+  content     String
+  generatedAt DateTime @default(now())
+
+  @@unique([userId, date])
+}

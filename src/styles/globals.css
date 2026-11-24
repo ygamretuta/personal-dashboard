@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+/* Semantic tokens, named by purpose. Light is the default; dark is set via data-theme. */
+:root {
+  --surface: #fafafa;
+  --panel: #ffffff;
+  --line: #e5e5e8;
+  --on-surface: #17171a;
+  --subtle: #62626b;
+  --brand: #4f46e5;
+  --on-brand: #ffffff;
+  --hover: #f1f1f4;
+  --selected: #eceeff;
+  --src-slack: #a21caf;
+  --src-gmail: #dc2626;
+  --src-calendar: #0369a1;
+  --src-github: #3f3f46;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface: #0c0c0e;
+  --panel: #131316;
+  --line: #26262b;
+  --on-surface: #ececf0;
+  --subtle: #9b9ba6;
+  --brand: #818cf8;
+  --on-brand: #0c0c14;
+  --hover: #1a1a1f;
+  --selected: #1b1c33;
+  --src-slack: #e879f9;
+  --src-gmail: #f87171;
+  --src-calendar: #38bdf8;
+  --src-github: #d4d4d8;
+}
+
+@theme inline {
+  --color-background: var(--surface);
+  --color-panel: var(--panel);
+  --color-border: var(--line);
+  --color-foreground: var(--on-surface);
+  --color-muted: var(--subtle);
+  --color-primary: var(--brand);
+  --color-primary-foreground: var(--on-brand);
+  --color-hover: var(--hover);
+  --color-selected: var(--selected);
+  --color-source-slack: var(--src-slack);
+  --color-source-gmail: var(--src-gmail);
+  --color-source-calendar: var(--src-calendar);
+  --color-source-github: var(--src-github);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  border-radius: 6px;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@layer components {
+  /* Theme-matched images: show only the one for the active theme. */
+  :root[data-theme="dark"] .light-only,
+  :root:not([data-theme="dark"]) .dark-only {
+    display: none;
+  }
+  .animate-slide-in {
+    animation: slide-in 180ms ease-out;
+  }
+  .animate-fade-in {
+    animation: fade-in 150ms ease-out;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: var(--color-panel);
+    padding: 0.25rem 0.625rem;
+    font-size: 0.8125rem;
+    transition: background-color 150ms;
+  }
+  .btn:hover {
+    background: var(--color-hover);
+  }
+  .btn-primary {
+    border-color: transparent;
+    background: var(--color-primary);
+    color: var(--color-primary-foreground);
+  }
+  .btn-primary:hover {
+    background: var(--color-primary);
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
