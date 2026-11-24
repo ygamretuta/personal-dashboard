@@ -2,9 +2,7 @@
 
 **One keyboard-first inbox for Slack, Gmail, Google Calendar and GitHub.** Triage everything that needs you without switching apps, then get on with your day.
 
-### 👉 [Try the demo](https://YOUR-DEPLOYMENT.vercel.app/demo) &nbsp;·&nbsp; no sign-up, loads in seconds
-
-> Replace the link above with your Vercel URL after deploying (see [Deploy](#deploy)).
+### 👉 [Try the demo](https://personal-dashboard-cyan-ten.vercel.app/demo) &nbsp;·&nbsp; no sign-up, loads in seconds
 
 ![Morning inbox in light mode](public/screenshots/inbox-light.png)
 
