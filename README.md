@@ -22,6 +22,8 @@
 - **Daily brief:** a short summary of what needs you. Rule-based by default; add an `ANTHROPIC_API_KEY` and Claude writes it once per morning instead (cached).
 - **Live updates:** per-source polling, plus a signed Slack Events webhook. New items slide in.
 - **Demo mode:** the whole app on seeded data, through the same adapter interface, with no OAuth.
+- **Search and stats:** `/` searches title, preview and sender; `/stats` shows what you triaged, your median response time and a day streak.
+- **Background sync and push:** a scheduled workflow syncs every 10 minutes and sends a Web Push notification for new high-priority items (opt in under Settings).
 - **Keyboard-first:** every action has a shortcut, and `⌘K` opens a command palette.
 
 ## Keyboard shortcuts
@@ -35,6 +37,8 @@
 | `s`             | Snooze for 1 hour                                |
 | `m`             | Mark as read                                     |
 | `o`             | Open in the source app                           |
+| `/`             | Search the inbox (`Esc` clears)                  |
+| `u`             | Show unread only                                 |
 | `⌘K` / `Ctrl+K` | Command palette                                  |
 | `?`             | Shortcut cheatsheet                              |
 

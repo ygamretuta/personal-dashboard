@@ -28,6 +28,28 @@ describe("visible feed items", () => {
     expect(visibleItems(items, "github", NOW).map((i) => i.id)).toEqual(["g"]);
   });
 
+  it("matches every word of a search query against title, preview and sender", () => {
+    const items = [
+      makeItem({ id: "a", title: "Invoice due", sender: { name: "Dana Lee" } }),
+      makeItem({ id: "b", title: "Lunch?", preview: "invoice later", sender: { name: "Sam" } }),
+      makeItem({ id: "c", title: "Standup" }),
+    ];
+    expect(
+      visibleItems(items, "all", NOW, { query: "invoice" })
+        .map((i) => i.id)
+        .sort(),
+    ).toEqual(["a", "b"]);
+    expect(visibleItems(items, "all", NOW, { query: "DANA invoice" }).map((i) => i.id)).toEqual([
+      "a",
+    ]);
+    expect(visibleItems(items, "all", NOW, { query: "  " })).toHaveLength(3);
+  });
+
+  it("can show only unread items", () => {
+    const items = [makeItem({ id: "u" }), makeItem({ id: "r", status: "read" })];
+    expect(visibleItems(items, "all", NOW, { unreadOnly: true }).map((i) => i.id)).toEqual(["u"]);
+  });
+
   it("counts unread items per source", () => {
     const items = [
       makeItem({ id: "1" }),

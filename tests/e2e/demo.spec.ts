@@ -26,6 +26,25 @@ test.describe("demo mode", () => {
     await expect(rows(page)).toHaveCount(13);
   });
 
+  test("searches with / and clears with Escape", async ({ page }) => {
+    await openDemo(page);
+    await page.keyboard.press("/");
+    await expect(page.getByRole("searchbox", { name: "Search inbox" })).toBeFocused();
+    await page.keyboard.type("roadmap");
+    await expect(rows(page).first()).toContainText("Q4 roadmap");
+    await page.keyboard.type(" zzzznomatch");
+    await expect(page.getByText("No matches")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(rows(page)).toHaveCount(13);
+  });
+
+  test("shows unread only with u", async ({ page }) => {
+    await openDemo(page);
+    await page.keyboard.press("Enter"); // opening an item marks it read
+    await page.keyboard.press("u");
+    await expect(rows(page)).toHaveCount(12);
+  });
+
   test("moves with j and k and archives with e", async ({ page }) => {
     await openDemo(page);
     await page.getByRole("button", { name: /^Gmail/ }).click(); // Gmail items support archive

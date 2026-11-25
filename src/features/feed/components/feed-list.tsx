@@ -8,6 +8,8 @@ interface FeedListProps {
   freshIds: string[];
   now: number;
   onSelect: (id: string) => void;
+  /** True when a search or unread filter is hiding items, so "Inbox zero" would be a lie. */
+  narrowed?: boolean;
 }
 
 function FeedSkeleton() {
@@ -26,7 +28,14 @@ function FeedSkeleton() {
   );
 }
 
-function EmptyInbox() {
+function EmptyInbox({ narrowed }: { narrowed: boolean }) {
+  if (narrowed)
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-1 p-8 text-center">
+        <p className="text-lg">No matches</p>
+        <p className="text-sm text-muted">Try a different search or clear the filters.</p>
+      </div>
+    );
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-1 p-8 text-center">
       <p className="text-lg">Inbox zero ☕</p>
@@ -35,9 +44,16 @@ function EmptyInbox() {
   );
 }
 
-export function FeedList({ items, selectedId, freshIds, now, onSelect }: FeedListProps) {
+export function FeedList({
+  items,
+  selectedId,
+  freshIds,
+  now,
+  onSelect,
+  narrowed = false,
+}: FeedListProps) {
   if (!items) return <FeedSkeleton />;
-  if (items.length === 0) return <EmptyInbox />;
+  if (items.length === 0) return <EmptyInbox narrowed={narrowed} />;
 
   return (
     <ul

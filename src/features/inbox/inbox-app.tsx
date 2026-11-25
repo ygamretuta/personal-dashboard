@@ -7,6 +7,7 @@ import { DetailPane } from "@/features/detail/detail-pane";
 import { FeedList } from "@/features/feed/components/feed-list";
 import { FilterChips } from "@/features/feed/components/filter-chips";
 import { LoadFailed } from "@/features/feed/components/load-failed";
+import { SearchBox } from "@/features/feed/components/search-box";
 import { SyncBanner } from "@/features/feed/components/sync-banner";
 import { CommandPalette } from "@/features/shortcuts/command-palette";
 import { Cheatsheet } from "@/features/shortcuts/cheatsheet";
@@ -29,6 +30,12 @@ export function InboxApp({ mode }: { mode: InboxMode }) {
             <Kbd keys={SHORTCUTS.commandPalette.keys} />
           </button>
         </div>
+        <SearchBox
+          value={inbox.query}
+          onChange={inbox.setQuery}
+          onClear={inbox.clearSearch}
+          inputRef={inbox.searchRef}
+        />
         <FilterChips value={inbox.filter} counts={inbox.counts} onChange={inbox.setFilter} />
         <SyncBanner errors={inbox.sourceErrors} />
         {inbox.visible && (
@@ -48,6 +55,7 @@ export function InboxApp({ mode }: { mode: InboxMode }) {
             freshIds={inbox.freshIds}
             now={inbox.now}
             onSelect={inbox.selectItem}
+            narrowed={inbox.narrowed}
           />
         )}
         <p className="border-t border-border px-4 py-2 text-xs text-muted">

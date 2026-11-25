@@ -14,9 +14,35 @@ function byPriorityThenNewest(a: FeedItem, b: FeedItem): number {
   return new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime();
 }
 
-export function visibleItems(items: FeedItem[], filter: SourceFilter, now: number): FeedItem[] {
+export interface FeedView {
+  query?: string;
+  unreadOnly?: boolean;
+}
+
+/** Every word of the query must appear somewhere in the item, in any order. */
+function matchesQuery(item: FeedItem, query: string): boolean {
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return true;
+  const haystack = [item.title, item.preview, item.sender.name, item.sender.handle]
+    .join(" ")
+    .toLowerCase();
+  return words.every((word) => haystack.includes(word));
+}
+
+export function visibleItems(
+  items: FeedItem[],
+  filter: SourceFilter,
+  now: number,
+  { query = "", unreadOnly = false }: FeedView = {},
+): FeedItem[] {
   return items
-    .filter((item) => isVisible(item, now) && (filter === "all" || item.source === filter))
+    .filter(
+      (item) =>
+        isVisible(item, now) &&
+        (filter === "all" || item.source === filter) &&
+        (!unreadOnly || item.status === "unread") &&
+        matchesQuery(item, query),
+    )
     .sort(byPriorityThenNewest);
 }
 

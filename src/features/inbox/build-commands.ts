@@ -9,6 +9,9 @@ interface CommandContext {
   runAction: (action: ActionType) => void;
   snoozeUntilTomorrow: () => void;
   setFilter: (filter: SourceFilter) => void;
+  unreadOnly: boolean;
+  toggleUnread: () => void;
+  focusSearch: () => void;
   toggleTheme: () => void;
   showCheatsheet: () => void;
   goToSettings: () => void;
@@ -39,8 +42,24 @@ export function buildCommands(context: CommandContext): Command[] {
     })),
   ];
 
+  const viewCommands: Command[] = [
+    {
+      id: "toggle-unread",
+      label: context.unreadOnly ? "Show read items too" : "Show unread only",
+      keys: SHORTCUTS.toggleUnread.keys,
+      run: context.toggleUnread,
+    },
+    {
+      id: "search",
+      label: "Search inbox",
+      keys: SHORTCUTS.search.keys,
+      run: context.focusSearch,
+    },
+  ];
+
   return [
     ...itemCommands,
+    ...viewCommands,
     ...filterCommands,
     { id: "theme", label: "Toggle dark mode", run: context.toggleTheme },
     {

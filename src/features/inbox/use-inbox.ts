@@ -57,6 +57,9 @@ export function useInbox(mode: InboxMode) {
   }, [mode]);
 
   const [filter, setFilter] = useState<SourceFilter>("all");
+  const [query, setQuery] = useState("");
+  const [unreadOnly, setUnreadOnly] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
   const [requestedId, setRequestedId] = useState<string>();
   const [overlay, setOverlay] = useState<Overlay>("none");
   const [detailOpen, setDetailOpen] = useState(false);
@@ -64,8 +67,8 @@ export function useInbox(mode: InboxMode) {
   const replyRef = useRef<HTMLTextAreaElement>(null);
 
   const visible = useMemo(
-    () => (items ? visibleItems(items, filter, now) : null),
-    [items, filter, now],
+    () => (items ? visibleItems(items, filter, now, { query, unreadOnly }) : null),
+    [items, filter, now, query, unreadOnly],
   );
   const counts = useMemo(() => unreadCounts(items ?? [], now), [items, now]);
   const brief = useBrief(mode === "demo" ? "demo" : "live", items, now);
@@ -104,6 +107,13 @@ export function useInbox(mode: InboxMode) {
 
   const snoozeUntilTomorrow = () => runAction("snooze", { until: tomorrowMorning(now) });
 
+  const focusSearch = () => searchRef.current?.focus();
+  const toggleUnread = () => setUnreadOnly((value) => !value);
+  const clearSearch = () => {
+    setQuery("");
+    searchRef.current?.blur();
+  };
+
   const openDetail = () => {
     setDetailOpen(true);
     if (selected?.status === "unread") void act(selected, "markRead");
@@ -120,6 +130,8 @@ export function useInbox(mode: InboxMode) {
       snooze: () => runAction("snooze"),
       markRead: () => runAction("markRead"),
       openSource: () => runAction("open"),
+      search: focusSearch,
+      toggleUnread,
       commandPalette: openPalette,
       cheatsheet: () => setOverlay("cheatsheet"),
     },
@@ -133,6 +145,9 @@ export function useInbox(mode: InboxMode) {
     runAction: (action) => runAction(action),
     snoozeUntilTomorrow,
     setFilter,
+    unreadOnly,
+    toggleUnread,
+    focusSearch,
     toggleTheme,
     showCheatsheet: () => setOverlay("cheatsheet"),
     goToSettings: () => router.push("/settings"),
@@ -150,6 +165,13 @@ export function useInbox(mode: InboxMode) {
     now,
     filter,
     setFilter,
+    query,
+    setQuery,
+    clearSearch,
+    searchRef,
+    unreadOnly,
+    toggleUnread,
+    narrowed: query.trim() !== "" || unreadOnly,
     selectItem,
     overlay,
     closeOverlay: () => setOverlay("none"),
