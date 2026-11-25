@@ -28,3 +28,15 @@ test("command palette", async ({ page }) => {
   await page.waitForTimeout(400); // let the fade-in finish
   await page.screenshot({ path: `${OUT_DIR}/command-palette.png` });
 });
+
+for (const theme of ["light", "dark"] as const) {
+  test(`dashboard in ${theme} mode`, async ({ page }) => {
+    await page.addInitScript((value) => localStorage.setItem("theme", value), theme);
+    await page.setViewportSize({ width: 1440, height: 1500 });
+    await page.goto("/dashboard");
+    await expect(page.getByRole("heading", { name: "Needs your attention" })).toBeVisible();
+    await expect(page.getByText("Team standup").first()).toBeVisible();
+    await page.waitForTimeout(800);
+    await page.screenshot({ path: `${OUT_DIR}/dashboard-${theme}.png` });
+  });
+}

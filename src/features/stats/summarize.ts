@@ -22,6 +22,8 @@ export interface Stats {
   medianResponseMs: number | undefined;
   /** Consecutive days, ending today or yesterday, with at least one triaged item. */
   streakDays: number;
+  /** Triage counts by weekday (Monday first) and hour of day: `heatmap[weekday][hour]`. */
+  heatmap: number[][];
 }
 
 export const STATS_WINDOW_DAYS = 14;
@@ -54,6 +56,18 @@ function streakFrom(counts: Map<string, number>, today: Date): number {
   return streak;
 }
 
+export const HOURS_PER_DAY = 24;
+const DAYS_PER_WEEK = 7;
+const emptyHeatmap = () =>
+  Array.from({ length: DAYS_PER_WEEK }, () => Array(HOURS_PER_DAY).fill(0));
+
+function heatmapOf(logs: LoggedAction[]): number[][] {
+  const grid = emptyHeatmap();
+  for (const { createdAt } of logs)
+    grid[(createdAt.getDay() + 6) % DAYS_PER_WEEK][createdAt.getHours()] += 1;
+  return grid;
+}
+
 export function summarize(logs: LoggedAction[], now: Date): Stats {
   const triaged = logs.filter((log) => TRIAGE_ACTIONS.includes(log.action));
   const counts = new Map<string, number>();
@@ -79,5 +93,6 @@ export function summarize(logs: LoggedAction[], now: Date): Stats {
         .filter((ms) => ms >= 0),
     ),
     streakDays: streakFrom(counts, now),
+    heatmap: heatmapOf(triaged),
   };
 }

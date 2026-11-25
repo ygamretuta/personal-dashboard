@@ -18,7 +18,7 @@ import { createRemoteAdapters, REMOTE_ACCOUNTS } from "./remote-adapters";
 
 export type InboxMode = "demo" | "live";
 
-const MODE_CONFIG = {
+export const MODE_CONFIG = {
   demo: {
     createAdapters: () => createDemoAdapters(),
     accounts: DEMO_ACCOUNTS,

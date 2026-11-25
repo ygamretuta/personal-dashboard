@@ -27,6 +27,9 @@ export default function LandingPage() {
           Try the demo
         </Link>
         <span className="text-sm text-muted">No sign-up. Loads in seconds.</span>
+        <Link href="/dashboard" className="text-sm text-muted underline">
+          See the dashboard
+        </Link>
         <Link href="/inbox" className="text-sm text-muted underline">
           Sign in
         </Link>

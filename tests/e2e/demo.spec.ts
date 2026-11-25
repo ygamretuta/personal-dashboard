@@ -156,3 +156,30 @@ test.describe("calendar", () => {
     await expect(form.getByRole("alert")).toContainText("end after it starts");
   });
 });
+
+test.describe("dashboard", () => {
+  test("shows live widgets on demo data without signing in", async ({ page }) => {
+    await page.goto("/dashboard");
+    await expect(
+      page.getByRole("heading", { name: /Good (morning|afternoon|evening)/ }),
+    ).toBeVisible();
+    for (const widget of [
+      "Needs your attention",
+      "Today",
+      "Unread by source",
+      "Triage activity",
+      "When you triage",
+      "Deployments",
+      "GitHub",
+      "Connections",
+      "Keyboard shortcuts",
+    ]) {
+      await expect(page.getByRole("heading", { name: widget, exact: true })).toBeVisible();
+    }
+    await expect(page.getByText("production deployment failed").first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Open inbox" }).first()).toHaveAttribute(
+      "href",
+      "/demo",
+    );
+  });
+});

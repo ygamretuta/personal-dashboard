@@ -1,11 +1,21 @@
 "use client";
 
-import { BarChart3, CalendarDays, FlaskConical, Inbox, Moon, Settings, Sun } from "lucide-react";
+import {
+  BarChart3,
+  LayoutDashboard,
+  CalendarDays,
+  FlaskConical,
+  Inbox,
+  Moon,
+  Settings,
+  Sun,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/lib/use-theme";
 
 const NAV_LINKS = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/inbox", label: "Inbox", icon: Inbox },
   { href: "/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/stats", label: "Stats", icon: BarChart3 },

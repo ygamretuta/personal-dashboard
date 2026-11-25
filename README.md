@@ -7,7 +7,9 @@
 ![Morning inbox in light mode](public/screenshots/inbox-light.png)
 
 <details>
-<summary>Dark mode and command palette</summary>
+<summary>Dashboard, dark mode and command palette</summary>
+
+![Dashboard](public/screenshots/dashboard-light.png)
 
 ![Morning inbox in dark mode](public/screenshots/inbox-dark.png)
 ![Command palette](public/screenshots/command-palette.png)
@@ -22,6 +24,7 @@
 - **Daily brief:** a short summary of what needs you. Rule-based by default; add an `ANTHROPIC_API_KEY` and Claude writes it once per morning instead (cached).
 - **Live updates:** per-source polling, plus a signed Slack Events webhook. New items slide in.
 - **Demo mode:** the whole app on seeded data, through the same adapter interface, with no OAuth.
+- **Dashboard (`/dashboard`):** one screen of widgets over the same data: what needs you, today's agenda, unread by source, a 14-day triage chart, a weekday-by-hour activity heatmap, GitHub review queue and recent commits, Vercel deployments and connection health. Demo data when signed out.
 - **Calendar page:** a week view of your Google Calendar where you can add events (guests, location, Meet link) without opening Google Calendar. Signed-out visitors get an in-memory demo.
 - **Search and stats:** `/` searches title, preview and sender; `/stats` shows what you triaged, your median response time and a day streak.
 - **Background sync and push:** a scheduled workflow syncs every 10 minutes and sends a Web Push notification for new high-priority items (opt in under Settings).

@@ -53,3 +53,17 @@ describe("summarize", () => {
     expect(summarize([log(2), log(3)], NOW).streakDays).toBe(0);
   });
 });
+
+describe("heatmap", () => {
+  it("counts triage actions by weekday (Monday first) and hour", () => {
+    const monday = new Date(2026, 10, 23, 9, 15); // Monday
+    const sunday = new Date(2026, 10, 29, 22, 5);
+    const stats = summarize(
+      [log(0, { createdAt: monday }), log(0, { createdAt: monday }), log(0, { createdAt: sunday })],
+      NOW,
+    );
+    expect(stats.heatmap[0][9]).toBe(2);
+    expect(stats.heatmap[6][22]).toBe(1);
+    expect(stats.heatmap.flat().reduce((a, b) => a + b, 0)).toBe(3);
+  });
+});

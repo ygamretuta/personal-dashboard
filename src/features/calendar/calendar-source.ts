@@ -70,19 +70,29 @@ const DEMO_SLOTS: DemoSlot[] = [
     title: "Interview loop: platform",
     location: "Room 4B",
   },
+  { day: 3, hour: 14, startMinute: 0, minutes: 60, title: "Q4 roadmap review", meet: true },
+  { day: 4, hour: 16, startMinute: 0, minutes: 30, title: "Demo Friday" },
+];
+/** Events placed around "now" so a demo opened at any hour has something past, current and upcoming today. */
+const DEMO_TODAY: {
+  offsetMinutes: number;
+  minutes: number;
+  title: string;
+  location?: string;
+  meet?: boolean;
+}[] = [
+  { offsetMinutes: -100, minutes: 30, title: "Coffee with Dana" },
+  { offsetMinutes: 25, minutes: 15, title: "Team standup", meet: true },
   {
-    day: 2,
-    hour: 10,
-    startMinute: 0,
+    offsetMinutes: 180,
     minutes: 45,
     title: "Design review: inbox empty states",
     location: "Room 4B",
   },
-  { day: 2, hour: 10, startMinute: 30, minutes: 30, title: "1:1 with Priya", meet: true },
-  { day: 3, hour: 14, startMinute: 0, minutes: 60, title: "Q4 roadmap review", meet: true },
-  { day: 4, hour: 16, startMinute: 0, minutes: 30, title: "Demo Friday" },
+  { offsetMinutes: 300, minutes: 30, title: "1:1 with Priya", meet: true },
 ];
 const DEMO_LATENCY_MS = 200;
+const END_OF_DAY_MINUTES = 23 * 60 + 30;
 
 /** In-memory calendar so visitors can add events without signing in. Nothing is stored. */
 export function createDemoCalendar(now: Date = new Date()): CalendarSource {
@@ -100,6 +110,26 @@ export function createDemoCalendar(now: Date = new Date()): CalendarSource {
       location: slot.location,
       meetUrl: slot.meet ? "https://meet.google.com/demo-demo-demo" : undefined,
     };
+  });
+  const endOfToday = new Date(now);
+  endOfToday.setHours(0, END_OF_DAY_MINUTES, 0, 0);
+  DEMO_TODAY.forEach((slot, index) => {
+    // Keep late-evening visitors' events on today rather than spilling past midnight.
+    const start = new Date(
+      Math.min(
+        now.getTime() + slot.offsetMinutes * 60_000,
+        endOfToday.getTime() - slot.minutes * 60_000,
+      ),
+    );
+    entries.push({
+      id: `demo-today-${index}`,
+      title: slot.title,
+      start: start.toISOString(),
+      end: new Date(start.getTime() + slot.minutes * 60_000).toISOString(),
+      allDay: false,
+      location: slot.location,
+      meetUrl: slot.meet ? "https://meet.google.com/demo-demo-demo" : undefined,
+    });
   });
   const wait = () => new Promise((resolve) => setTimeout(resolve, DEMO_LATENCY_MS));
 
