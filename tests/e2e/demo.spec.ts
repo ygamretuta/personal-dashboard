@@ -11,9 +11,9 @@ const rows = (page: Page) => page.getByRole("listbox", { name: "Inbox" }).getByR
 test.describe("demo mode", () => {
   test("loads seeded items from every source without signing in", async ({ page }) => {
     await openDemo(page);
-    await expect(rows(page)).toHaveCount(14); // seeded items; later arrivals are not counted yet
+    await expect(rows(page)).toHaveCount(16); // seeded items; later arrivals are not counted yet
     await expect(page.getByRole("region", { name: "Daily brief" })).toContainText("need you today");
-    for (const source of ["Slack", "Gmail", "Calendar", "GitHub"]) {
+    for (const source of ["Slack", "Gmail", "Calendar", "GitHub", "Vercel"]) {
       await expect(page.getByRole("button", { name: new RegExp(`^${source}`) })).toBeVisible();
     }
   });
@@ -23,7 +23,7 @@ test.describe("demo mode", () => {
     await page.getByRole("button", { name: /^GitHub/ }).click();
     await expect(rows(page)).toHaveCount(4);
     await page.getByRole("button", { name: /^All/ }).click();
-    await expect(rows(page)).toHaveCount(14);
+    await expect(rows(page)).toHaveCount(16);
   });
 
   test("searches with / and clears with Escape", async ({ page }) => {
@@ -35,14 +35,14 @@ test.describe("demo mode", () => {
     await page.keyboard.type(" zzzznomatch");
     await expect(page.getByText("No matches")).toBeVisible();
     await page.keyboard.press("Escape");
-    await expect(rows(page)).toHaveCount(14);
+    await expect(rows(page)).toHaveCount(16);
   });
 
   test("shows unread only with u", async ({ page }) => {
     await openDemo(page);
     await page.keyboard.press("Enter"); // opening an item marks it read
     await page.keyboard.press("u");
-    await expect(rows(page)).toHaveCount(13);
+    await expect(rows(page)).toHaveCount(15);
   });
 
   test("moves with j and k and archives with e", async ({ page }) => {
@@ -119,10 +119,10 @@ test.describe("demo mode", () => {
   });
 });
 
-test("settings lists the four integrations", async ({ page }) => {
+test("settings lists the five integrations", async ({ page }) => {
   await page.goto("/settings");
   await expect(page.getByRole("heading", { name: "Settings" })).toBeVisible();
-  for (const source of ["Slack", "Gmail", "Calendar", "GitHub"]) {
+  for (const source of ["Slack", "Gmail", "Calendar", "GitHub", "Vercel"]) {
     await expect(page.getByText(source, { exact: true })).toBeVisible();
   }
 });

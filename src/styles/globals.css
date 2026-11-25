@@ -15,6 +15,7 @@
   --src-gmail: #dc2626;
   --src-calendar: #0369a1;
   --src-github: #3f3f46;
+  --src-vercel: #18181b;
 }
 
 :root[data-theme="dark"] {
@@ -32,6 +33,7 @@
   --src-gmail: #f87171;
   --src-calendar: #38bdf8;
   --src-github: #d4d4d8;
+  --src-vercel: #fafafa;
 }
 
 @theme inline {
@@ -48,6 +50,7 @@
   --color-source-gmail: var(--src-gmail);
   --color-source-calendar: var(--src-calendar);
   --color-source-github: var(--src-github);
+  --color-source-vercel: var(--src-vercel);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

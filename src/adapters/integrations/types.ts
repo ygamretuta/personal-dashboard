@@ -43,3 +43,12 @@ export interface OAuthProvider {
   /** Trades a refresh token for a new access token; absent for tokens that never expire. */
   refresh?(refreshToken: string): Promise<Pick<TokenSet, "accessToken" | "expiresAt">>;
 }
+
+/** For services without a usable OAuth flow: the user pastes a personal access token instead. */
+export interface TokenProvider {
+  /** Where the user creates the token, and what to give it. Shown next to the input. */
+  helpUrl: string;
+  helpText: string;
+  /** Checks the token against the vendor and returns what to store. Throws if it is rejected. */
+  verify(token: string): Promise<TokenSet>;
+}

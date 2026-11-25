@@ -2,6 +2,7 @@ import type { SyncErrorKind } from "@/features/feed/sync-errors";
 import { GithubApiError, GithubRateLimitError } from "./github/client";
 import { GoogleApiError } from "./google/client";
 import { SlackApiError } from "./slack/client";
+import { VercelApiError } from "./vercel/client";
 
 /** A token request to an OAuth provider was refused; for a refresh this means the grant is gone. */
 export class OAuthTokenError extends Error {
@@ -41,6 +42,11 @@ export function classifyAdapterError(error: unknown, now: number = Date.now()): 
   if (error instanceof GoogleApiError || error instanceof GithubApiError) {
     if (error.status === 401) return { kind: "auth" };
     if (RATE_LIMIT_STATUSES.includes(error.status)) return { kind: "rate_limited" };
+  }
+  if (error instanceof VercelApiError) {
+    // Vercel answers 403 for a revoked or invalid token.
+    if (error.status === 401 || error.status === 403) return { kind: "auth" };
+    if (error.status === 429) return { kind: "rate_limited" };
   }
   if (error instanceof OAuthTokenError && AUTH_STATUSES.includes(error.status))
     return { kind: "auth" };

@@ -1,6 +1,6 @@
 # ☀️ Morning
 
-**One keyboard-first inbox for Slack, Gmail, Google Calendar and GitHub.** Triage everything that needs you without switching apps, then get on with your day.
+**One keyboard-first inbox for Slack, Gmail, Google Calendar, GitHub and Vercel.** Triage everything that needs you without switching apps, then get on with your day.
 
 ### 👉 [Try the demo](https://personal-dashboard-cyan-ten.vercel.app/demo) &nbsp;·&nbsp; no sign-up, loads in seconds
 
@@ -126,6 +126,10 @@ One Google sign-in connects both. In Google Cloud, create a Web OAuth client wit
 **Why Gmail runs in testing mode.** Gmail's modify and send scopes are _restricted_: publishing an app that uses them requires Google's app verification and a third-party security assessment. This project keeps the OAuth consent screen in **Testing** with the owner as a test user, which also means Google expires refresh tokens after 7 days (reconnect weekly). Everyone else uses the demo, which covers the same interface.
 
 Calendar shows timed, non-declined events from 2 hours ago to 24 hours ahead and is read-only; snooze and dismiss are local.
+
+### Vercel
+
+Deployments are read with a personal access token instead of OAuth (Vercel has no OAuth flow for reading your own deployments). Create one at https://vercel.com/account/tokens, scoped to the teams you want to watch, and paste it under Settings → Vercel. It is checked, then stored encrypted. Failed deployments arrive as unread items (high priority when they are production, which also triggers a push notification); successful production deploys arrive already read. Archiving and snoozing only affect this app.
 
 ### GitHub
 

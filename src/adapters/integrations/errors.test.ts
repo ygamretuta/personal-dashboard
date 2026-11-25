@@ -3,6 +3,7 @@ import { classifyAdapterError, OAuthTokenError } from "./errors";
 import { GithubApiError, GithubRateLimitError } from "./github/client";
 import { GoogleApiError } from "./google/client";
 import { SlackApiError } from "./slack/client";
+import { VercelApiError } from "./vercel/client";
 
 describe("classifying adapter errors", () => {
   it("recognizes revoked or expired connections as needing reconnection", () => {
@@ -30,5 +31,12 @@ describe("classifying adapter errors", () => {
     expect(classifyAdapterError(new GoogleApiError("u", 500)).kind).toBe("failed");
     expect(classifyAdapterError(new Error("boom")).kind).toBe("failed");
     expect(classifyAdapterError(undefined).kind).toBe("failed");
+  });
+
+  it("treats a Vercel 401 or 403 as a bad token and 429 as a rate limit", () => {
+    expect(classifyAdapterError(new VercelApiError("u", 401)).kind).toBe("auth");
+    expect(classifyAdapterError(new VercelApiError("u", 403)).kind).toBe("auth");
+    expect(classifyAdapterError(new VercelApiError("u", 429)).kind).toBe("rate_limited");
+    expect(classifyAdapterError(new VercelApiError("u", 500)).kind).toBe("failed");
   });
 });

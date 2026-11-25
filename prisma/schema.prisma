@@ -13,6 +13,7 @@ enum Source {
   gmail
   calendar
   github
+  vercel
 }
 
 enum FeedItemKind {
@@ -22,6 +23,7 @@ enum FeedItemKind {
   review_request
   issue
   commit
+  deployment
 }
 
 enum Priority {

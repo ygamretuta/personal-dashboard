@@ -3,7 +3,7 @@
 import { SOURCES, type Source } from "@/features/feed/types";
 import { useTheme } from "@/lib/use-theme";
 import { NotificationsCard } from "@/features/notifications/notifications-card";
-import { IntegrationCard, type IntegrationStatus } from "./integration-card";
+import { IntegrationCard, type IntegrationStatus, type TokenHelp } from "./integration-card";
 
 export interface SettingsNotice {
   tone: "success" | "error";
@@ -15,6 +15,7 @@ interface SettingsViewProps {
   signedIn: boolean;
   connected: Source[];
   connectable: Source[];
+  tokenHelp: Partial<Record<Source, TokenHelp>>;
 }
 
 function statusFor(
@@ -51,7 +52,12 @@ export function SettingsView(props: SettingsViewProps) {
         </p>
         <ul className="space-y-2">
           {SOURCES.map((source) => (
-            <IntegrationCard key={source} source={source} status={statusFor(source, props)} />
+            <IntegrationCard
+              key={source}
+              source={source}
+              status={statusFor(source, props)}
+              tokenHelp={props.tokenHelp[source]}
+            />
           ))}
         </ul>
       </section>

@@ -1,12 +1,18 @@
 import { Suspense } from "react";
-import { OAUTH_PROVIDERS } from "@/adapters/integrations/registry";
+import { OAUTH_PROVIDERS, TOKEN_PROVIDERS } from "@/adapters/integrations/registry";
 import { getCurrentUserId } from "@/adapters/auth";
 import { SOURCE_CONFIG } from "@/features/feed/sources";
 import { SOURCES, type Source } from "@/features/feed/types";
 import { listConnectedSources } from "@/features/integrations/server/accounts";
 import { SettingsView, type SettingsNotice } from "@/features/settings/settings-view";
 
-const CONNECTABLE = Object.keys(OAUTH_PROVIDERS) as Source[];
+const CONNECTABLE = [...Object.keys(OAUTH_PROVIDERS), ...Object.keys(TOKEN_PROVIDERS)] as Source[];
+const TOKEN_HELP = Object.fromEntries(
+  Object.entries(TOKEN_PROVIDERS).map(([source, { helpUrl, helpText }]) => [
+    source,
+    { helpUrl, helpText },
+  ]),
+);
 
 /** Only known source names are ever shown, so a crafted URL cannot put text on the page. */
 function noticeFrom(
@@ -36,6 +42,7 @@ async function Settings({
       signedIn={Boolean(userId)}
       connected={connected}
       connectable={CONNECTABLE}
+      tokenHelp={TOKEN_HELP}
       notice={noticeFrom(params)}
     />
   );

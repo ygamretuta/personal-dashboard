@@ -1,3 +1,4 @@
+import { bySource } from "./by-source";
 import type { FeedItem, Priority, Source, SourceFilter } from "./types";
 
 const PRIORITY_RANK: Record<Priority, number> = { high: 0, normal: 1, low: 2 };
@@ -47,13 +48,7 @@ export function visibleItems(
 }
 
 export function unreadCounts(items: FeedItem[], now: number): Record<Source | "all", number> {
-  const counts: Record<Source | "all", number> = {
-    all: 0,
-    slack: 0,
-    gmail: 0,
-    calendar: 0,
-    github: 0,
-  };
+  const counts = { all: 0, ...bySource(() => 0) };
   for (const item of items) {
     if (!isVisible(item, now) || item.status !== "unread") continue;
     counts.all += 1;

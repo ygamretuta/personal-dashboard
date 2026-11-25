@@ -230,11 +230,37 @@ const INCOMING: SeedItem[] = [
   },
 ];
 
+const VERCEL: SeedItem[] = [
+  {
+    externalId: "deployment:dpl_demo_failed",
+    source: "vercel",
+    kind: "deployment",
+    priority: "high",
+    minutesAgo: 25,
+    actions: GITHUB_ACTIONS,
+    title: "personal-dashboard: production deployment failed",
+    sender: { name: "Marcus Lee", handle: "marcus" },
+    body: "marcus triggered a failed production deployment of personal-dashboard.\n\nfix: back off on HTTP 429 in the Slack adapter\n\nmain @ 4d2e9c1\n\nBuild failed: type error in src/adapters/integrations/slack/client.ts.",
+  },
+  {
+    externalId: "deployment:dpl_demo_ready",
+    source: "vercel",
+    kind: "deployment",
+    priority: "low",
+    minutesAgo: 190,
+    actions: GITHUB_ACTIONS,
+    title: "personal-dashboard deployed to production",
+    sender: { name: "Aiko Tanaka", handle: "aiko" },
+    body: "aiko shipped a production deployment of personal-dashboard.\n\nfeat: add calendar page\n\nmain @ 9f3c2ab",
+  },
+];
+
 const BY_SOURCE: Record<Source, SeedItem[]> = {
   slack: SLACK,
   gmail: GMAIL,
   calendar: CALENDAR,
   github: GITHUB,
+  vercel: VERCEL,
 };
 
 export const seedItems = (source: Source, now: Date): FeedItem[] =>
