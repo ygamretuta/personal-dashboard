@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { CALENDAR_READ_SCOPE, createGoogleOAuth, GMAIL_MODIFY_SCOPE } from "./oauth";
+import { CALENDAR_EVENTS_SCOPE, createGoogleOAuth, GMAIL_MODIFY_SCOPE } from "./oauth";
 
 const NOW = 1_700_000_000_000;
 const json = (body: unknown) => new Response(JSON.stringify(body));
@@ -13,7 +13,7 @@ describe("Google OAuth", () => {
   it("asks for Gmail and Calendar in one consent, offline", () => {
     const url = new URL(createGoogleOAuth().buildAuthorizeUrl("state-1", "https://app.test/cb"));
     expect(url.searchParams.get("scope")).toContain(GMAIL_MODIFY_SCOPE);
-    expect(url.searchParams.get("scope")).toContain(CALENDAR_READ_SCOPE);
+    expect(url.searchParams.get("scope")).toContain(CALENDAR_EVENTS_SCOPE);
     expect(url.searchParams.get("access_type")).toBe("offline");
     expect(url.searchParams.get("state")).toBe("state-1");
   });
@@ -26,7 +26,7 @@ describe("Google OAuth", () => {
           access_token: "at",
           refresh_token: "rt",
           expires_in: 3600,
-          scope: `${GMAIL_MODIFY_SCOPE} ${CALENDAR_READ_SCOPE}`,
+          scope: `${GMAIL_MODIFY_SCOPE} ${CALENDAR_EVENTS_SCOPE}`,
         }),
       )
       .mockResolvedValueOnce(json({ sub: "1234" }));

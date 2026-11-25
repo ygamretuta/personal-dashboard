@@ -126,3 +126,33 @@ test("settings lists the four integrations", async ({ page }) => {
     await expect(page.getByText(source, { exact: true })).toBeVisible();
   }
 });
+
+test.describe("calendar", () => {
+  test("shows the demo week and adds an event without leaving the app", async ({ page }) => {
+    await page.goto("/calendar");
+    await expect(page.getByRole("heading", { name: "Calendar · demo" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Weekly planning/ })).toBeVisible();
+
+    await page.keyboard.press("c");
+    const form = page.getByRole("dialog", { name: "New event" });
+    await expect(form).toBeVisible();
+    await form.getByLabel("Title").fill("Dentist");
+    await form.getByLabel("Start").fill("15:00");
+    await form.getByLabel("End").fill("16:00");
+    await form.getByRole("button", { name: "Save" }).click();
+
+    await expect(form).toBeHidden();
+    await expect(page.getByRole("gridcell").getByText("Dentist")).toBeVisible();
+  });
+
+  test("rejects an event that ends before it starts", async ({ page }) => {
+    await page.goto("/calendar");
+    await page.getByRole("button", { name: /New event/ }).click();
+    const form = page.getByRole("dialog", { name: "New event" });
+    await form.getByLabel("Title").fill("Backwards");
+    await form.getByLabel("Start").fill("15:00");
+    await form.getByLabel("End").fill("14:00");
+    await form.getByRole("button", { name: "Save" }).click();
+    await expect(form.getByRole("alert")).toContainText("end after it starts");
+  });
+});

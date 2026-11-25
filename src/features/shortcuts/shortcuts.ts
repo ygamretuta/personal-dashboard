@@ -15,6 +15,7 @@ export const SHORTCUTS = {
   openSource: { keys: ["o"], label: "Open in source app" },
   search: { keys: ["/"], label: "Search" },
   toggleUnread: { keys: ["u"], label: "Show unread only" },
+  newEvent: { keys: ["c"], label: "New event (Calendar page)" },
   commandPalette: { keys: ["Mod", "k"], label: "Command palette" },
   cheatsheet: { keys: ["?"], label: "Show shortcuts" },
 } as const satisfies Record<string, Shortcut>;

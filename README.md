@@ -22,6 +22,7 @@
 - **Daily brief:** a short summary of what needs you. Rule-based by default; add an `ANTHROPIC_API_KEY` and Claude writes it once per morning instead (cached).
 - **Live updates:** per-source polling, plus a signed Slack Events webhook. New items slide in.
 - **Demo mode:** the whole app on seeded data, through the same adapter interface, with no OAuth.
+- **Calendar page:** a week view of your Google Calendar where you can add events (guests, location, Meet link) without opening Google Calendar. Signed-out visitors get an in-memory demo.
 - **Search and stats:** `/` searches title, preview and sender; `/stats` shows what you triaged, your median response time and a day streak.
 - **Background sync and push:** a scheduled workflow syncs every 10 minutes and sends a Web Push notification for new high-priority items (opt in under Settings).
 - **Keyboard-first:** every action has a shortcut, and `⌘K` opens a command palette.
@@ -120,7 +121,7 @@ Create a Slack app. Under OAuth, add the redirect URL `<APP_URL>/api/integration
 
 ### Gmail and Calendar
 
-One Google sign-in connects both. In Google Cloud, create a Web OAuth client with the redirect URI `<APP_URL>/api/integrations/gmail/callback` and enable the Gmail and Google Calendar APIs. Scopes: `gmail.modify` (read, archive, mark read), `gmail.send` (replies) and `calendar.readonly`.
+One Google sign-in connects both. In Google Cloud, create a Web OAuth client with the redirect URI `<APP_URL>/api/integrations/gmail/callback` and enable the Gmail and Google Calendar APIs. Scopes: `gmail.modify` (read, archive, mark read), `gmail.send` (replies) and `calendar.events` (read your events and add new ones from the Calendar page; accounts connected before that scope was added must reconnect once).
 
 **Why Gmail runs in testing mode.** Gmail's modify and send scopes are _restricted_: publishing an app that uses them requires Google's app verification and a third-party security assessment. This project keeps the OAuth consent screen in **Testing** with the owner as a test user, which also means Google expires refresh tokens after 7 days (reconnect weekly). Everyone else uses the demo, which covers the same interface.
 

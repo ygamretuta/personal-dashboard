@@ -3,16 +3,17 @@ import { OAuthTokenError } from "../errors";
 import type { OAuthProvider } from "../types";
 
 export const GMAIL_MODIFY_SCOPE = "https://www.googleapis.com/auth/gmail.modify";
-export const CALENDAR_READ_SCOPE = "https://www.googleapis.com/auth/calendar.readonly";
+/** Read and write events (not calendar settings or sharing): needed to add events from the app. */
+export const CALENDAR_EVENTS_SCOPE = "https://www.googleapis.com/auth/calendar.events";
 
 /** One consent screen covers Gmail and Calendar. Sending is needed for replies. */
 export const GOOGLE_SCOPES = [
   "openid",
   GMAIL_MODIFY_SCOPE,
   "https://www.googleapis.com/auth/gmail.send",
-  CALENDAR_READ_SCOPE,
+  CALENDAR_EVENTS_SCOPE,
 ];
-const REQUIRED_SCOPES = [GMAIL_MODIFY_SCOPE, CALENDAR_READ_SCOPE];
+const REQUIRED_SCOPES = [GMAIL_MODIFY_SCOPE, CALENDAR_EVENTS_SCOPE];
 
 const AUTHORIZE_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";

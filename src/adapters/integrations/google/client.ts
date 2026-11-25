@@ -61,7 +61,8 @@ export function createGoogleClient(
 
   return {
     get: <T>(url: string, params?: Params) => request<T>("GET", withParams(url, params)),
-    post: <T>(url: string, body?: unknown) => request<T>("POST", url, body ?? {}),
+    post: <T>(url: string, body?: unknown, params?: Params) =>
+      request<T>("POST", withParams(url, params), body ?? {}),
   };
 }
 

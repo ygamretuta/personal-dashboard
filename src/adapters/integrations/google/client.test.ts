@@ -48,3 +48,11 @@ describe("Google client", () => {
     ).rejects.toBeInstanceOf(GoogleApiError);
   });
 });
+
+describe("Google client query params on POST", () => {
+  it("adds query params to the URL of a POST", async () => {
+    const fetchImpl = vi.fn().mockImplementation(async () => json({}));
+    await createGoogleClient("tok", { fetchImpl }).post("https://api.test/z", { a: 1 }, { v: 1 });
+    expect(fetchImpl.mock.calls[0][0]).toBe("https://api.test/z?v=1");
+  });
+});
