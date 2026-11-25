@@ -28,6 +28,8 @@ const nextConfig: NextConfig = {
 
 // Source maps upload only when SENTRY_AUTH_TOKEN is set (CI / Vercel).
 export default withSentryConfig(nextConfig, {
+  org: "ygam-labs",
+  project: "personal-dashboard",
   authToken: process.env.SENTRY_AUTH_TOKEN,
   silent: !process.env.CI,
   widenClientFileUpload: true,
