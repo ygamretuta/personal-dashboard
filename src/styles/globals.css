@@ -16,12 +16,14 @@
   --src-calendar: #0369a1;
   --src-github: #3f3f46;
   --src-vercel: #18181b;
+  --src-sentry: #6d28d9;
   /* Chart palette (validated: adjacent colorblind separation and lightness band). */
   --chart-1: #2a78d6;
   --chart-2: #eb6834;
   --chart-3: #1baf7a;
   --chart-4: #eda100;
   --chart-5: #e87ba4;
+  --chart-6: #008300;
   --chart-sequence: #2a78d6;
   --status-good: #006300;
   --status-critical: #d03b3b;
@@ -43,11 +45,13 @@
   --src-calendar: #38bdf8;
   --src-github: #d4d4d8;
   --src-vercel: #fafafa;
+  --src-sentry: #a78bfa;
   --chart-1: #3987e5;
   --chart-2: #d95926;
   --chart-3: #199e70;
   --chart-4: #c98500;
   --chart-5: #d55181;
+  --chart-6: #0ca30c;
   --chart-sequence: #3987e5;
   --status-good: #0ca30c;
   --status-critical: #d03b3b;
@@ -68,11 +72,13 @@
   --color-source-calendar: var(--src-calendar);
   --color-source-github: var(--src-github);
   --color-source-vercel: var(--src-vercel);
+  --color-source-sentry: var(--src-sentry);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
   --color-chart-sequence: var(--chart-sequence);
   --color-good: var(--status-good);
   --color-critical: var(--status-critical);

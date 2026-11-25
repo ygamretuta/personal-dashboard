@@ -20,11 +20,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ sou
 
   const settings = (query: string) =>
     NextResponse.redirect(`${appOrigin(request)}/settings?${query}`, 303);
-  const token = String((await request.formData()).get("token") ?? "").trim();
+  const form = await request.formData();
+  const token = String(form.get("token") ?? "").trim();
+  const fields = Object.fromEntries(
+    (provider.fields ?? []).map(({ name }) => [name, String(form.get(name) ?? "").trim()]),
+  );
   if (!token || token.length > MAX_TOKEN_LENGTH) return settings(`error=${source}`);
 
   try {
-    await saveAccount(userId, source as Source, await provider.verify(token));
+    await saveAccount(userId, source as Source, await provider.verify(token, fields));
     return settings(`connected=${source}`);
   } catch (error) {
     // A rejected token is the user's to fix, not an error worth reporting.

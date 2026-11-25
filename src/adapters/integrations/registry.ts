@@ -7,6 +7,8 @@ import { gmailAdapter } from "./gmail/adapter";
 import { googleOAuth } from "./google/oauth";
 import { slackAdapter } from "./slack/adapter";
 import { slackOAuth } from "./slack/oauth";
+import { sentryAdapter } from "./sentry/adapter";
+import { sentryToken } from "./sentry/token";
 import { vercelAdapter } from "./vercel/adapter";
 import { vercelToken } from "./vercel/token";
 
@@ -20,6 +22,7 @@ export const ADAPTERS: Partial<Record<Source, IntegrationAdapter>> = {
   calendar: calendarAdapter,
   github: githubAdapter,
   vercel: vercelAdapter,
+  sentry: sentryAdapter,
 };
 
 /** Gmail and Calendar share one Google grant, so both point at the same provider. */
@@ -33,4 +36,5 @@ export const OAUTH_PROVIDERS: Partial<Record<Source, OAuthProvider>> = {
 /** Services connected by pasting a personal access token instead of an OAuth redirect. */
 export const TOKEN_PROVIDERS: Partial<Record<Source, TokenProvider>> = {
   vercel: vercelToken,
+  sentry: sentryToken,
 };

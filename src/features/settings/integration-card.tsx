@@ -14,6 +14,12 @@ const STATUS_TEXT: Record<IntegrationStatus, string> = {
 export interface TokenHelp {
   helpUrl: string;
   helpText: string;
+  fields?: {
+    name: string;
+    label: string;
+    placeholder?: string;
+    options?: { value: string; label: string }[];
+  }[];
 }
 
 function TokenForm({ source, help }: { source: Source; help: TokenHelp }) {
@@ -23,6 +29,32 @@ function TokenForm({ source, help }: { source: Source; help: TokenHelp }) {
       method="post"
       className="mt-2 flex w-full flex-wrap items-center gap-2"
     >
+      {help.fields?.map((field) =>
+        field.options ? (
+          <select
+            key={field.name}
+            name={field.name}
+            aria-label={field.label}
+            className="rounded-md border border-border bg-background px-2.5 py-1 text-sm"
+          >
+            {field.options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            key={field.name}
+            name={field.name}
+            required
+            autoComplete="off"
+            aria-label={field.label}
+            placeholder={field.label}
+            className="w-40 rounded-md border border-border bg-background px-2.5 py-1 text-sm"
+          />
+        ),
+      )}
       <input
         name="token"
         type="password"

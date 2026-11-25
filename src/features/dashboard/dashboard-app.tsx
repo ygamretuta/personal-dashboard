@@ -18,6 +18,7 @@ import { AgendaWidget } from "./widgets/agenda-widget";
 import { AttentionWidget } from "./widgets/attention-widget";
 import { ConnectionsWidget } from "./widgets/connections-widget";
 import { DeploysWidget } from "./widgets/deploys-widget";
+import { ErrorsWidget } from "./widgets/errors-widget";
 import { GithubWidget } from "./widgets/github-widget";
 import { StatTile } from "./widgets/stat-tile";
 import { TipsWidget } from "./widgets/tips-widget";
@@ -182,14 +183,18 @@ export function DashboardApp({ mode, stats, connected }: DashboardAppProps) {
             summary={dashboard.github}
             now={now}
             inboxHref={inboxHref}
-            className="lg:col-span-6 xl:col-span-5"
-          />
-          <ConnectionsWidget
-            connected={connected}
-            errors={dashboard.sourceErrors}
             className="lg:col-span-3 xl:col-span-4"
           />
-          <TipsWidget className="lg:col-span-3 xl:col-span-3" />
+          <ErrorsWidget
+            summary={dashboard.errors}
+            now={now}
+            inboxHref={inboxHref}
+            className="lg:col-span-3 xl:col-span-5"
+          />
+          <div className="flex flex-col gap-4 lg:col-span-6 xl:col-span-3">
+            <ConnectionsWidget connected={connected} errors={dashboard.sourceErrors} />
+            <TipsWidget />
+          </div>
         </div>
       </div>
     </div>

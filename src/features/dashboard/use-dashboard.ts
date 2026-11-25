@@ -10,6 +10,7 @@ import { useBrief } from "@/features/brief/use-brief";
 import { useFeed } from "@/features/feed/use-feed";
 import { MODE_CONFIG, type InboxMode } from "@/features/inbox/use-inbox";
 import {
+  errorSummary,
   githubSummary,
   highPriorityCount,
   needsAttention,
@@ -77,5 +78,6 @@ export function useDashboard(mode: InboxMode) {
     attention: items ? needsAttention(items, now) : null,
     github: items ? githubSummary(items, now) : null,
     deployments: items ? recentDeployments(items) : null,
+    errors: items ? errorSummary(items, now) : null,
   };
 }

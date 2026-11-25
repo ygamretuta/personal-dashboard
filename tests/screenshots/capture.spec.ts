@@ -5,8 +5,9 @@ const OUT_DIR = "public/screenshots";
 async function openDemo(page: Page, theme: "light" | "dark") {
   await page.addInitScript((value) => localStorage.setItem("theme", value), theme);
   await page.goto("/demo");
-  await expect(page.getByRole("listbox", { name: "Inbox" }).getByRole("option")).toHaveCount(16);
-  await page.keyboard.press("j"); // select the email, a better hero than a one-line DM
+  await expect(page.getByRole("listbox", { name: "Inbox" }).getByRole("option")).toHaveCount(19);
+  // The email makes a better hero than a one-line DM, and ordering shifts as demo data grows.
+  await page.getByRole("option", { name: /Interview loop confirmed/ }).click();
   await expect(page.getByRole("heading", { level: 1, name: /Interview loop/ })).toBeVisible();
   await page.waitForTimeout(600); // let every transition settle before capturing
 }

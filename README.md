@@ -1,6 +1,6 @@
 # ☀️ Morning
 
-**One keyboard-first inbox for Slack, Gmail, Google Calendar, GitHub and Vercel.** Triage everything that needs you without switching apps, then get on with your day.
+**One keyboard-first inbox for Slack, Gmail, Google Calendar, GitHub, Vercel and Sentry.** Triage everything that needs you without switching apps, then get on with your day.
 
 ### 👉 [Try the demo](https://personal-dashboard-cyan-ten.vercel.app/demo) &nbsp;·&nbsp; no sign-up, loads in seconds
 
@@ -133,6 +133,10 @@ Calendar shows timed, non-declined events from 2 hours ago to 24 hours ahead and
 ### Vercel
 
 Deployments are read with a personal access token instead of OAuth (Vercel has no OAuth flow for reading your own deployments). Create one at https://vercel.com/account/tokens, scoped to the teams you want to watch, and paste it under Settings → Vercel. It is checked, then stored encrypted. Failed deployments arrive as unread items (high priority when they are production, which also triggers a push notification); successful production deploys arrive already read. Archiving and snoozing only affect this app.
+
+### Sentry
+
+Read-only, connected with a token. Create one at https://sentry.io/settings/account/api/auth-tokens/ with the scopes `org:read`, `project:read` and `event:read`, then enter it in Settings with your organization slug (the first part of your Sentry URL) and region (US or EU). The inbox shows every unresolved issue seen in the last 24 hours: errors and fatals are high priority (new ones also send a push notification), warnings normal. Event counts are refreshed on each sync. Under Settings you can pick which projects to watch; all of them are watched until you narrow it down. Archive and snooze only affect this app, so nothing is ever resolved in Sentry from here.
 
 ### GitHub
 

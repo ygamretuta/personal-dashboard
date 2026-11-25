@@ -129,3 +129,20 @@ describe("github and deployments", () => {
     expect([isFailedDeployment(failed), isFailedDeployment(ok)]).toEqual([true, false]);
   });
 });
+
+describe("errorSummary", () => {
+  it("counts unresolved Sentry issues and picks the most pressing", async () => {
+    const { errorSummary } = await import("./derive");
+    const summary = errorSummary(
+      [
+        makeItem({ id: "e1", source: "sentry", kind: "error", priority: "high" }),
+        makeItem({ id: "e2", source: "sentry", kind: "error", priority: "normal" }),
+        makeItem({ id: "e3", source: "sentry", kind: "error", status: "archived" }),
+        makeItem({ id: "x", source: "gmail" }),
+      ],
+      NOW,
+    );
+    expect(summary).toMatchObject({ open: 2, critical: 1 });
+    expect(summary.top.map((item) => item.id)).toEqual(["e1", "e2"]);
+  });
+});

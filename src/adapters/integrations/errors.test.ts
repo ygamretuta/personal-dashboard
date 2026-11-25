@@ -3,6 +3,7 @@ import { classifyAdapterError, OAuthTokenError } from "./errors";
 import { GithubApiError, GithubRateLimitError } from "./github/client";
 import { GoogleApiError } from "./google/client";
 import { SlackApiError } from "./slack/client";
+import { SentryApiError } from "./sentry/client";
 import { VercelApiError } from "./vercel/client";
 
 describe("classifying adapter errors", () => {
@@ -38,5 +39,12 @@ describe("classifying adapter errors", () => {
     expect(classifyAdapterError(new VercelApiError("u", 403)).kind).toBe("auth");
     expect(classifyAdapterError(new VercelApiError("u", 429)).kind).toBe("rate_limited");
     expect(classifyAdapterError(new VercelApiError("u", 500)).kind).toBe("failed");
+  });
+
+  it("treats a Sentry 401 or 403 as a bad token and 429 as a rate limit", () => {
+    expect(classifyAdapterError(new SentryApiError("u", 401)).kind).toBe("auth");
+    expect(classifyAdapterError(new SentryApiError("u", 403)).kind).toBe("auth");
+    expect(classifyAdapterError(new SentryApiError("u", 429)).kind).toBe("rate_limited");
+    expect(classifyAdapterError(new SentryApiError("u", 500)).kind).toBe("failed");
   });
 });

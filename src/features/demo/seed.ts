@@ -255,12 +255,49 @@ const VERCEL: SeedItem[] = [
   },
 ];
 
+const SENTRY: SeedItem[] = [
+  {
+    externalId: "issue:demo-1",
+    source: "sentry",
+    kind: "error",
+    priority: "high",
+    minutesAgo: 12,
+    actions: GITHUB_ACTIONS,
+    title: "TypeError: Cannot read properties of undefined (reading 'accessToken')",
+    sender: { name: "personal-dashboard", handle: "DASHBOARD-1" },
+    body: "error in personal-dashboard\n\nCulprit: refreshAccount(src/features/integrations/server/accounts.ts)\n\n312 events · 41 users affected\n\nFirst seen 3 hours ago",
+  },
+  {
+    externalId: "issue:demo-2",
+    source: "sentry",
+    kind: "error",
+    priority: "high",
+    minutesAgo: 70,
+    actions: GITHUB_ACTIONS,
+    title: "SlackApiError: ratelimited",
+    sender: { name: "personal-dashboard", handle: "DASHBOARD-7" },
+    body: "fatal in personal-dashboard\n\nCulprit: slack/client.ts in request\n\n58 events · 9 users affected\n\nFirst seen yesterday",
+  },
+  {
+    externalId: "issue:demo-3",
+    source: "sentry",
+    kind: "error",
+    priority: "normal",
+    minutesAgo: 400,
+    actions: GITHUB_ACTIONS,
+    title: "Hydration mismatch in <CalendarApp>",
+    sender: { name: "personal-dashboard", handle: "DASHBOARD-3" },
+    body: "warning in personal-dashboard\n\nCulprit: calendar-app.tsx\n\n17 events · 5 users affected\n\nFirst seen 2 days ago",
+  },
+];
+
 const BY_SOURCE: Record<Source, SeedItem[]> = {
   slack: SLACK,
   gmail: GMAIL,
   calendar: CALENDAR,
   github: GITHUB,
   vercel: VERCEL,
+  sentry: SENTRY,
 };
 
 export const seedItems = (source: Source, now: Date): FeedItem[] =>

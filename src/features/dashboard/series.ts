@@ -7,4 +7,5 @@ export const SOURCE_SERIES: Record<Source, string> = {
   calendar: "var(--chart-3)",
   github: "var(--chart-4)",
   vercel: "var(--chart-5)",
+  sentry: "var(--chart-6)",
 };

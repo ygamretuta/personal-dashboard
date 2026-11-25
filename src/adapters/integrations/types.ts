@@ -8,6 +8,8 @@ export interface ConnectedAccount {
   accessToken: string;
   refreshToken?: string;
   expiresAt?: Date;
+  /** Choices the user made in Settings for this connection; shape is owned by the adapter. */
+  settings?: Record<string, unknown>;
 }
 
 export interface IntegrationAdapter {
@@ -45,10 +47,20 @@ export interface OAuthProvider {
 }
 
 /** For services without a usable OAuth flow: the user pastes a personal access token instead. */
+export interface TokenField {
+  name: string;
+  label: string;
+  placeholder?: string;
+  /** When set the field is a dropdown instead of free text. */
+  options?: { value: string; label: string }[];
+}
+
 export interface TokenProvider {
+  /** Extra inputs shown next to the token (an organization slug, a region). */
+  fields?: TokenField[];
   /** Where the user creates the token, and what to give it. Shown next to the input. */
   helpUrl: string;
   helpText: string;
   /** Checks the token against the vendor and returns what to store. Throws if it is rejected. */
-  verify(token: string): Promise<TokenSet>;
+  verify(token: string, fields?: Record<string, string>): Promise<TokenSet>;
 }

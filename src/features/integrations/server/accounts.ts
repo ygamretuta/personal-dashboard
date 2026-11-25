@@ -1,6 +1,7 @@
 import { OAUTH_PROVIDERS } from "@/adapters/integrations/registry";
 import type { TokenSet, ConnectedAccount } from "@/adapters/integrations/types";
 import { db } from "@/db/client";
+import { Prisma } from "@/generated/prisma/client";
 import { decrypt, encrypt } from "@/lib/crypto";
 import { needsRefresh } from "@/lib/token-expiry";
 import type { Source } from "@/features/feed/types";
@@ -41,6 +42,7 @@ export async function getAccount(userId: string, source: Source): Promise<Connec
     accessToken: decrypt(record.encryptedAccessToken),
     refreshToken: record.encryptedRefreshToken ? decrypt(record.encryptedRefreshToken) : undefined,
     expiresAt: record.expiresAt ?? undefined,
+    settings: (record.settings as Record<string, unknown> | null) ?? undefined,
   };
 
   const provider = OAUTH_PROVIDERS[source];
@@ -78,5 +80,17 @@ export async function markSynced(accountId: string): Promise<void> {
   await db.connectedAccount.update({
     where: { id: accountId },
     data: { lastSyncedAt: new Date() },
+  });
+}
+
+/** Saves the user's choices for a connection (for example watched Sentry projects). */
+export async function updateAccountSettings(
+  userId: string,
+  source: Source,
+  settings: Record<string, unknown> | null,
+): Promise<void> {
+  await db.connectedAccount.updateMany({
+    where: { userId, source },
+    data: { settings: settings ? (settings as Prisma.InputJsonObject) : Prisma.DbNull },
   });
 }

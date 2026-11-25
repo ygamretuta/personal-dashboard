@@ -69,6 +69,36 @@ export interface StoredFeed {
   fresh: FeedItem[];
 }
 
+/** Sources whose items change after we first see them (an error's event count keeps climbing). */
+const REFRESHED_SOURCES: Source[] = ["sentry"];
+
+/** Brings stored copies of changed items up to date; what the user did with them is left alone. */
+async function refreshStored(stored: Map<string, StoredItem>, items: FeedItem[]): Promise<void> {
+  const changed = items.filter((item) => {
+    const record = stored.get(item.externalId);
+    return (
+      record &&
+      (record.preview !== item.preview ||
+        record.priority !== item.priority ||
+        record.title !== item.title)
+    );
+  });
+  await Promise.all(
+    changed.map((item) =>
+      db.feedItemRecord.update({
+        where: { id: stored.get(item.externalId)!.id },
+        data: {
+          title: item.title,
+          preview: item.preview,
+          body: item.body,
+          priority: item.priority,
+          receivedAt: new Date(item.receivedAt),
+        },
+      }),
+    ),
+  );
+}
+
 /** Saves newly seen items and returns every item merged with the user's local state. */
 export async function storeItems(
   userId: string,
@@ -86,6 +116,7 @@ export async function storeItems(
       skipDuplicates: true,
     });
   }
+  if (REFRESHED_SOURCES.includes(source)) await refreshStored(known, items);
   return {
     items: items.map((item) => withLocalState(item, known.get(item.externalId))),
     fresh,

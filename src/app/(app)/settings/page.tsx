@@ -3,14 +3,15 @@ import { OAUTH_PROVIDERS, TOKEN_PROVIDERS } from "@/adapters/integrations/regist
 import { getCurrentUserId } from "@/adapters/auth";
 import { SOURCE_CONFIG } from "@/features/feed/sources";
 import { SOURCES, type Source } from "@/features/feed/types";
+import { getSentryProjectChoices } from "@/features/integrations/server/sentry-projects";
 import { listConnectedSources } from "@/features/integrations/server/accounts";
 import { SettingsView, type SettingsNotice } from "@/features/settings/settings-view";
 
 const CONNECTABLE = [...Object.keys(OAUTH_PROVIDERS), ...Object.keys(TOKEN_PROVIDERS)] as Source[];
 const TOKEN_HELP = Object.fromEntries(
-  Object.entries(TOKEN_PROVIDERS).map(([source, { helpUrl, helpText }]) => [
+  Object.entries(TOKEN_PROVIDERS).map(([source, { helpUrl, helpText, fields }]) => [
     source,
-    { helpUrl, helpText },
+    { helpUrl, helpText, fields },
   ]),
 );
 
@@ -21,6 +22,8 @@ function noticeFrom(
   const find = (key: string) => SOURCES.find((source) => source === params[key]);
   const connected = find("connected");
   if (connected) return { tone: "success", text: `${SOURCE_CONFIG[connected].label} connected.` };
+  const saved = find("saved");
+  if (saved) return { tone: "success", text: `${SOURCE_CONFIG[saved].label} settings saved.` };
   const failed = find("error");
   if (failed)
     return {
@@ -37,12 +40,15 @@ async function Settings({
 }) {
   const [userId, params] = await Promise.all([getCurrentUserId(), searchParams]);
   const connected = userId ? await listConnectedSources(userId) : [];
+  const sentryChoices =
+    userId && connected.includes("sentry") ? await getSentryProjectChoices(userId) : undefined;
   return (
     <SettingsView
       signedIn={Boolean(userId)}
       connected={connected}
       connectable={CONNECTABLE}
       tokenHelp={TOKEN_HELP}
+      sentryChoices={sentryChoices}
       notice={noticeFrom(params)}
     />
   );

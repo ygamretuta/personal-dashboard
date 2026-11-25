@@ -94,3 +94,21 @@ export function recentDeployments(items: FeedItem[]): FeedItem[] {
 
 export const sourceTotals = (items: FeedItem[]) =>
   bySource((source) => items.filter((item) => item.source === source).length);
+
+export interface ErrorSummary {
+  open: number;
+  critical: number;
+  top: FeedItem[];
+}
+
+const ERROR_LIMIT = 4;
+
+/** Unresolved Sentry issues from the last day that you have not dealt with. */
+export function errorSummary(items: FeedItem[], now: number): ErrorSummary {
+  const issues = visibleItems(items, "sentry", now, { unreadOnly: true });
+  return {
+    open: issues.length,
+    critical: issues.filter((issue) => issue.priority === "high").length,
+    top: issues.slice(0, ERROR_LIMIT),
+  };
+}

@@ -14,6 +14,7 @@ enum Source {
   calendar
   github
   vercel
+  sentry
 }
 
 enum FeedItemKind {
@@ -24,6 +25,7 @@ enum FeedItemKind {
   issue
   commit
   deployment
+  error
 }
 
 enum Priority {
@@ -63,6 +65,8 @@ model ConnectedAccount {
   expiresAt             DateTime?
   scopes                String[]
   lastSyncedAt          DateTime?
+  // Per-connection choices made in Settings (for example which Sentry projects to watch).
+  settings              Json?
 
   @@unique([userId, source, externalAccountId])
 }

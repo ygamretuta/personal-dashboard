@@ -1,4 +1,12 @@
-import { CalendarDays, GitPullRequest, Hash, Mail, Triangle, type LucideIcon } from "lucide-react";
+import {
+  CalendarDays,
+  GitPullRequest,
+  Hash,
+  Mail,
+  Triangle,
+  Bug,
+  type LucideIcon,
+} from "lucide-react";
 import type { Source } from "./types";
 
 interface SourceConfig {
@@ -44,6 +52,13 @@ export const SOURCE_CONFIG: Record<Source, SourceConfig> = {
     icon: Triangle,
     accentClass: "text-source-vercel",
     openLabel: "Open in Vercel",
+    archiveLabel: "Dismiss",
+  },
+  sentry: {
+    label: "Sentry",
+    icon: Bug,
+    accentClass: "text-source-sentry",
+    openLabel: "Open in Sentry",
     archiveLabel: "Dismiss",
   },
 };

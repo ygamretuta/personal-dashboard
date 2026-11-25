@@ -2,7 +2,9 @@
 
 import { SOURCES, type Source } from "@/features/feed/types";
 import { useTheme } from "@/lib/use-theme";
+import type { SentryProjectChoices } from "@/features/integrations/server/sentry-projects";
 import { NotificationsCard } from "@/features/notifications/notifications-card";
+import { SentryProjectsCard } from "./sentry-projects-card";
 import { IntegrationCard, type IntegrationStatus, type TokenHelp } from "./integration-card";
 
 export interface SettingsNotice {
@@ -16,6 +18,7 @@ interface SettingsViewProps {
   connected: Source[];
   connectable: Source[];
   tokenHelp: Partial<Record<Source, TokenHelp>>;
+  sentryChoices?: SentryProjectChoices;
 }
 
 function statusFor(
@@ -60,6 +63,7 @@ export function SettingsView(props: SettingsViewProps) {
             />
           ))}
         </ul>
+        {props.sentryChoices && <SentryProjectsCard choices={props.sentryChoices} />}
       </section>
 
       {props.signedIn && <NotificationsCard />}
