@@ -44,6 +44,8 @@ model User {
   connectedAccounts ConnectedAccount[]
   feedItems         FeedItemRecord[]
   briefs            DailyBrief[]
+  actionLogs        ActionLog[]
+  pushSubscriptions PushSubscription[]
 }
 
 model ConnectedAccount {
@@ -102,4 +104,30 @@ model DailyBrief {
   generatedAt DateTime @default(now())
 
   @@unique([userId, date])
+}
+
+// One row per triage action: powers the stats page without re-reading feed items.
+model ActionLog {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source         Source
+  action         String
+  itemReceivedAt DateTime
+  createdAt      DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+// A browser's Web Push endpoint; one user can have several (laptop, phone).
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }

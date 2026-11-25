@@ -2,6 +2,7 @@
 
 import { SOURCES, type Source } from "@/features/feed/types";
 import { useTheme } from "@/lib/use-theme";
+import { NotificationsCard } from "@/features/notifications/notifications-card";
 import { IntegrationCard, type IntegrationStatus } from "./integration-card";
 
 export interface SettingsNotice {
@@ -54,6 +55,8 @@ export function SettingsView(props: SettingsViewProps) {
           ))}
         </ul>
       </section>
+
+      {props.signedIn && <NotificationsCard />}
 
       <section aria-labelledby="appearance-heading" className="space-y-3">
         <h2 id="appearance-heading" className="text-sm font-medium">

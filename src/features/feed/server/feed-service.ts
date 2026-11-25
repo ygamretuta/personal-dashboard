@@ -62,12 +62,19 @@ export function fromRecord(stored: StoredItem): FeedItem {
   );
 }
 
+export interface StoredFeed {
+  /** Every item merged with the user's local state. */
+  items: FeedItem[];
+  /** Items we had never stored before: what a notification is about. */
+  fresh: FeedItem[];
+}
+
 /** Saves newly seen items and returns every item merged with the user's local state. */
 export async function storeItems(
   userId: string,
   source: Source,
   items: FeedItem[],
-): Promise<FeedItem[]> {
+): Promise<StoredFeed> {
   const where = { userId, source, externalId: { in: items.map((item) => item.externalId) } };
   const existing = await db.feedItemRecord.findMany({ where, include: { snooze: true } });
   const known = new Map(existing.map((record) => [record.externalId, record]));
@@ -79,17 +86,29 @@ export async function storeItems(
       skipDuplicates: true,
     });
   }
-  return items.map((item) => withLocalState(item, known.get(item.externalId)));
+  return {
+    items: items.map((item) => withLocalState(item, known.get(item.externalId))),
+    fresh,
+  };
 }
 
-export async function fetchFeed(userId: string, source: Source, since?: Date): Promise<FeedItem[]> {
+/** Pulls a source from its provider and stores it. Shared by the inbox API and the background sync. */
+export async function syncSource(
+  userId: string,
+  source: Source,
+  since?: Date,
+): Promise<StoredFeed> {
   const adapter = ADAPTERS[source];
   const account = adapter && (await getAccount(userId, source));
-  if (!adapter || !account) return [];
+  if (!adapter || !account) return { items: [], fresh: [] };
 
   const items = await adapter.fetchItems(account, since);
   await markSynced(account.id);
   return storeItems(userId, source, items);
+}
+
+export async function fetchFeed(userId: string, source: Source, since?: Date): Promise<FeedItem[]> {
+  return (await syncSource(userId, source, since)).items;
 }
 
 export class FeedActionError extends Error {}
@@ -117,6 +136,9 @@ export async function performFeedAction(
   await db.feedItemRecord.update({
     where: { id: stored.id },
     data: { status: updated.status, replies: updated.replies as object[] },
+  });
+  await db.actionLog.create({
+    data: { userId, source: stored.source, action, itemReceivedAt: stored.receivedAt },
   });
   if (updated.status === "snoozed" && updated.snoozedUntil) {
     await db.snooze.upsert({
