@@ -191,6 +191,17 @@ const GITHUB: SeedItem[] = [
     sender: { name: "Sam Okafor", handle: "sam" },
     body: 'Sam Okafor mentioned you in acme/platform#131.\n\n"@you does the focus trap in the dialog behave differently on WebKit? The e2e fails about one run in ten."',
   },
+  {
+    externalId: "commit:acme/platform:9f3c2ab",
+    source: "github",
+    kind: "commit",
+    priority: "normal",
+    minutesAgo: 95,
+    actions: GITHUB_ACTIONS,
+    title: "Refresh OAuth tokens a minute early (acme/platform@9f3c2ab)",
+    sender: { name: "Marcus Lee", handle: "marcus" },
+    body: "Marcus Lee pushed 9f3c2ab to acme/platform.\n\nRefresh OAuth tokens a minute early\n\nAvoids a race where a token expires between the check and the request.",
+  },
 ];
 
 /** Items that arrive after load, one per sync, to show the live feed. */

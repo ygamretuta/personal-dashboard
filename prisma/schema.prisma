@@ -21,6 +21,7 @@ enum FeedItemKind {
   event
   review_request
   issue
+  commit
 }
 
 enum Priority {

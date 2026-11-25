@@ -16,7 +16,7 @@
 
 ## What it does
 
-- **Unified feed:** Slack DMs and mentions, unread Gmail threads, today's calendar events and GitHub review requests and mentions, sorted by priority then time, with source filter chips.
+- **Unified feed:** Slack DMs and mentions, unread Gmail threads, today's calendar events and GitHub review requests, mentions and commits pushed to your own repos (your own commits arrive already read), sorted by priority then time, with source filter chips.
 - **Split view:** the feed on the left, the full message or email on the right, with a link out to the source.
 - **Inline actions with optimistic updates:** reply, archive, mark read, snooze and open. A failed action rolls back with a toast.
 - **Daily brief:** a short summary of what needs you. Rule-based by default; add an `ANTHROPIC_API_KEY` and Claude writes it once per morning instead (cached).
@@ -128,7 +128,7 @@ Calendar shows timed, non-declined events from 2 hours ago to 24 hours ahead and
 
 ### GitHub
 
-Create a GitHub **OAuth App** with the callback `<APP_URL>/api/integrations/github/callback`. Scopes: `notifications` (review requests and mentions) and `repo` (the one broad scope: GitHub only allows reading private pull requests with it). "Mark done" removes the notification on GitHub. GitHub has no push for OAuth apps, so it syncs by polling.
+Create a GitHub **OAuth App** with the callback `<APP_URL>/api/integrations/github/callback`. Scopes: `notifications` (review requests and mentions) and `repo` (the one broad scope: GitHub only allows reading private pull requests with it). "Mark done" removes the notification on GitHub. Commits come from your 15 most recently pushed repos (about 17 API calls per sync). GitHub has no push for OAuth apps, so it syncs by polling.
 
 ## Daily brief
 

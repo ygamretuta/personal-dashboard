@@ -11,7 +11,7 @@ const rows = (page: Page) => page.getByRole("listbox", { name: "Inbox" }).getByR
 test.describe("demo mode", () => {
   test("loads seeded items from every source without signing in", async ({ page }) => {
     await openDemo(page);
-    await expect(rows(page)).toHaveCount(13); // seeded items; later arrivals are not counted yet
+    await expect(rows(page)).toHaveCount(14); // seeded items; later arrivals are not counted yet
     await expect(page.getByRole("region", { name: "Daily brief" })).toContainText("need you today");
     for (const source of ["Slack", "Gmail", "Calendar", "GitHub"]) {
       await expect(page.getByRole("button", { name: new RegExp(`^${source}`) })).toBeVisible();
@@ -21,9 +21,9 @@ test.describe("demo mode", () => {
   test("filters by source", async ({ page }) => {
     await openDemo(page);
     await page.getByRole("button", { name: /^GitHub/ }).click();
-    await expect(rows(page)).toHaveCount(3);
+    await expect(rows(page)).toHaveCount(4);
     await page.getByRole("button", { name: /^All/ }).click();
-    await expect(rows(page)).toHaveCount(13);
+    await expect(rows(page)).toHaveCount(14);
   });
 
   test("searches with / and clears with Escape", async ({ page }) => {
@@ -35,14 +35,14 @@ test.describe("demo mode", () => {
     await page.keyboard.type(" zzzznomatch");
     await expect(page.getByText("No matches")).toBeVisible();
     await page.keyboard.press("Escape");
-    await expect(rows(page)).toHaveCount(13);
+    await expect(rows(page)).toHaveCount(14);
   });
 
   test("shows unread only with u", async ({ page }) => {
     await openDemo(page);
     await page.keyboard.press("Enter"); // opening an item marks it read
     await page.keyboard.press("u");
-    await expect(rows(page)).toHaveCount(12);
+    await expect(rows(page)).toHaveCount(13);
   });
 
   test("moves with j and k and archives with e", async ({ page }) => {
@@ -87,7 +87,7 @@ test.describe("demo mode", () => {
     await page.keyboard.type("only github");
     await page.keyboard.press("Enter");
     await expect(palette).toBeHidden();
-    await expect(rows(page)).toHaveCount(3);
+    await expect(rows(page)).toHaveCount(4);
   });
 
   test("shows the shortcut cheatsheet with ? and closes it with Escape", async ({ page }) => {

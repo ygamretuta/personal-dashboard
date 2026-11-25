@@ -3,7 +3,8 @@ import type { ConnectedAccount } from "../types";
 import { createGithubAdapter } from "./adapter";
 import { GithubApiError, type GithubClient } from "./client";
 import { normalizeGithubNotification } from "./normalize";
-import type { GithubNotification } from "./types";
+import { normalizeGithubCommit } from "./normalize-commit";
+import type { GithubCommit, GithubNotification, GithubRepo } from "./types";
 
 const account: ConnectedAccount = {
   id: "a",
@@ -39,10 +40,17 @@ function fakeClient(
     user: { login: "u" },
     body: "b",
   }),
+  repos: GithubRepo[] = [],
+  commits: Record<string, GithubCommit[]> = {},
 ) {
   const client = {
     getAll: vi.fn(async () => notifications),
-    get: vi.fn(async (url: string) => get(url)),
+    get: vi.fn(async (url: string) => {
+      if (url === "/user") return { login: "me" };
+      if (url === "/user/repos") return repos;
+      if (url.endsWith("/commits")) return commits[url] ?? [];
+      return get(url);
+    }),
     send: vi.fn(async () => {}),
   };
   return { client: client as unknown as GithubClient, ...client };
@@ -86,7 +94,10 @@ describe("GitHub adapter", () => {
       () => client,
       () => NOW,
     ).fetchItems(account);
-    expect(get.mock.calls.map(([url]) => url).sort()).toEqual([
+    const detailCalls = get.mock.calls
+      .map(([url]) => url)
+      .filter((url) => url.startsWith("https://"));
+    expect(detailCalls.sort()).toEqual([
       "https://api.github.com/comments/2",
       "https://api.github.com/repos/a/b/pulls/1",
       "https://api.github.com/repos/a/b/pulls/2",
@@ -132,5 +143,71 @@ describe("GitHub adapter", () => {
     await adapter.performAction(account, item, "snooze");
     expect(send).not.toHaveBeenCalled();
     await expect(adapter.performAction(account, item, "reply", { text: "hi" })).rejects.toThrow();
+  });
+
+  describe("commits", () => {
+    const repo = (full_name: string, pushed_at: string | null, archived = false): GithubRepo => ({
+      full_name,
+      pushed_at,
+      archived,
+    });
+    const commit = (sha: string, login: string | null): GithubCommit => ({
+      sha,
+      html_url: `https://github.com/me/app/commit/${sha}`,
+      commit: { message: `Change ${sha}`, committer: { name: "N", date: "2026-11-24T08:00:00Z" } },
+      author: login ? { login } : null,
+    });
+
+    it("lists commits from recently pushed repos you own, skipping archived and stale ones", async () => {
+      const { client, get } = fakeClient(
+        [],
+        undefined,
+        [
+          repo("me/app", "2026-11-24T08:30:00Z"),
+          repo("me/old", "2026-01-01T00:00:00Z"),
+          repo("me/frozen", "2026-11-24T08:30:00Z", true),
+        ],
+        { "/repos/me/app/commits": [commit("abc1234567", "sam"), commit("def7654321", "me")] },
+      );
+      const items = await createGithubAdapter(
+        () => client,
+        () => NOW,
+      ).fetchItems(account);
+
+      expect(items.map((item) => [item.kind, item.status, item.sender.handle])).toEqual([
+        ["commit", "unread", "sam"],
+        ["commit", "read", "me"],
+      ]);
+      expect(get).not.toHaveBeenCalledWith("/repos/me/old/commits", expect.anything());
+      expect(get).not.toHaveBeenCalledWith("/repos/me/frozen/commits", expect.anything());
+    });
+
+    it("skips a repo it cannot read instead of failing the sync", async () => {
+      const { client } = fakeClient(
+        [],
+        (url) => {
+          throw new GithubApiError(url, 409);
+        },
+        [repo("me/empty", "2026-11-24T08:30:00Z")],
+      );
+      client.get = vi.fn(async (url: string) => {
+        if (url === "/user") return { login: "me" };
+        if (url === "/user/repos") return [repo("me/empty", "2026-11-24T08:30:00Z")];
+        throw new GithubApiError(url, 409);
+      }) as GithubClient["get"];
+      const items = await createGithubAdapter(
+        () => client,
+        () => NOW,
+      ).fetchItems(account);
+      expect(items).toEqual([]);
+    });
+
+    it("does not call the notifications API for commit actions", async () => {
+      const { client, send } = fakeClient([]);
+      const [item] = [normalizeGithubCommit(commit("abc1234567", "sam"), "me/app", "me")];
+      await createGithubAdapter(() => client).performAction(account, item, "archive");
+      await createGithubAdapter(() => client).performAction(account, item, "markRead");
+      expect(send).not.toHaveBeenCalled();
+    });
   });
 });

@@ -1,6 +1,8 @@
 import { TIME } from "@/lib/constants";
 import type { IntegrationAdapter } from "../types";
 import { createGithubClient, GithubApiError, type GithubClient } from "./client";
+import { fetchCommitItems } from "./commits";
+import { isCommitId } from "./normalize-commit";
 import { isSupportedReason, normalizeGithubNotification } from "./normalize";
 import type { GithubComment, GithubNotification, GithubSubject } from "./types";
 
@@ -29,27 +31,17 @@ export function createGithubAdapter(
 
     async fetchItems(account, since) {
       const client = clientFactory(account.accessToken);
-      const notifications = await client.getAll<GithubNotification>("/notifications", {
-        participating: true, // only threads you are directly involved in, not every watched repo
-        since: (since ?? new Date(now() - DEFAULT_LOOKBACK_MS)).toISOString(),
-      });
-
-      return Promise.all(
-        notifications
-          .filter((notification) => notification.unread && isSupportedReason(notification.reason))
-          .map(async (notification) => {
-            const [subject, comment] = await Promise.all([
-              getOptional<GithubSubject>(client, notification.subject.url),
-              notification.reason === "review_requested"
-                ? undefined
-                : getOptional<GithubComment>(client, notification.subject.latest_comment_url),
-            ]);
-            return normalizeGithubNotification(notification, { subject, comment });
-          }),
-      );
+      const from = since ?? new Date(now() - DEFAULT_LOOKBACK_MS);
+      const [notificationItems, commitItems] = await Promise.all([
+        fetchNotificationItems(client, from),
+        fetchCommitItems(client, from),
+      ]);
+      return [...notificationItems, ...commitItems];
     },
 
     async performAction(account, item, action) {
+      // Commits are not GitHub notifications, so archive and mark read only exist in this app.
+      if (isCommitId(item.externalId)) return;
       const client = clientFactory(account.accessToken);
       const thread = `/notifications/threads/${item.externalId}`;
 
@@ -59,6 +51,27 @@ export function createGithubAdapter(
       // open and snooze are local to the app.
     },
   };
+}
+
+async function fetchNotificationItems(client: GithubClient, from: Date) {
+  const notifications = await client.getAll<GithubNotification>("/notifications", {
+    participating: true, // only threads you are directly involved in, not every watched repo
+    since: from.toISOString(),
+  });
+
+  return Promise.all(
+    notifications
+      .filter((notification) => notification.unread && isSupportedReason(notification.reason))
+      .map(async (notification) => {
+        const [subject, comment] = await Promise.all([
+          getOptional<GithubSubject>(client, notification.subject.url),
+          notification.reason === "review_requested"
+            ? undefined
+            : getOptional<GithubComment>(client, notification.subject.latest_comment_url),
+        ]);
+        return normalizeGithubNotification(notification, { subject, comment });
+      }),
+  );
 }
 
 export const githubAdapter = createGithubAdapter();

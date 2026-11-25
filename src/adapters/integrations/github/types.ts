@@ -28,3 +28,17 @@ export interface GithubComment {
   body: string;
   user: GithubUser;
 }
+
+export interface GithubRepo {
+  full_name: string;
+  pushed_at: string | null;
+  archived: boolean;
+}
+
+export interface GithubCommit {
+  sha: string;
+  html_url: string;
+  commit: { message: string; committer: { name: string; date: string } | null };
+  /** Null when the commit email is not linked to a GitHub account. */
+  author: GithubUser | null;
+}
