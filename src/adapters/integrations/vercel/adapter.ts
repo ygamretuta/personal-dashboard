@@ -45,7 +45,9 @@ export function createVercelAdapter(
         deploymentsFor(client, from),
         ...teams.map((team) => deploymentsFor(client, from, team)),
       ]);
-      return perScope.flat();
+      // Your default scope can be the same team that is also listed under /v2/teams.
+      const byId = new Map(perScope.flat().map((item) => [item.id, item]));
+      return [...byId.values()];
     },
 
     // Deployments live on Vercel; opening, archiving and snoozing only change this app.

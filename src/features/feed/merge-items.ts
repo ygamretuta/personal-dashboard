@@ -6,7 +6,8 @@ export function mergeNewItems(
   incoming: FeedItem[],
 ): { items: FeedItem[]; freshIds: string[] } {
   const known = new Set(current.map((item) => item.id));
-  const fresh = incoming.filter((item) => !known.has(item.id));
+  // An id can appear twice in one batch; keeping both would render two rows that select together.
+  const fresh = incoming.filter((item) => !known.has(item.id) && known.add(item.id));
   return { items: [...fresh, ...current], freshIds: fresh.map((item) => item.id) };
 }
 

@@ -54,6 +54,19 @@ describe("Vercel adapter", () => {
     );
   });
 
+  it("lists a deployment once when the personal scope and a team both return it", async () => {
+    const { client: fake } = client((path) =>
+      path === "/v2/teams"
+        ? { teams: [{ id: "team_1", slug: "acme" }] }
+        : { deployments: [dpl("same", "ERROR")] },
+    );
+    const items = await createVercelAdapter(
+      () => fake,
+      () => NOW,
+    ).fetchItems(account);
+    expect(items.map((item) => item.externalId)).toEqual(["deployment:same"]);
+  });
+
   it("only asks for deployments since the last sync, defaulting to two days", async () => {
     const { client: fake, get } = client((path) =>
       path === "/v2/teams" ? {} : { deployments: [] },
